@@ -96,4 +96,90 @@ function dogHome(){
   return {houseDog, getDogsByLocation}
 }
 
-module.exports = {increase, double, total, gibberish, mergeSort,calculator, dogHome};
+function trainStation(){
+  let people = []
+
+  function arrive(person){
+    people.push(person)
+  }
+
+  function getPeople(){
+    return people
+  }
+
+  function giveMoney(){
+    const highest = people.length - 1
+    let randomPerson;
+    if (people.length === 1) {
+      randomPerson = 0;
+    }
+    else if (people.length === 2) {
+      randomPerson = Math.round(Math.random());
+    }
+    else {
+      randomPerson = Math.floor(Math.random() * highest + 1);
+    }
+    const randomAmount = Math.floor(Math.random() * 20)
+    people[randomPerson].amount += randomAmount
+  }
+
+  function trainArrives(){
+    const leavers = people.filter(person => (person.amount >= 20))
+    people = people.filter(person => (person.amount < 20))
+    return leavers;
+  }
+
+  return {arrive, getPeople, giveMoney, trainArrives}
+}
+
+
+function shop(){
+  let storage = {}
+  // storage = {toy: {name: "toy", quantity: 5, price: 7}}
+  let revenue = 0
+
+  function addStock(itemArray){
+    itemArray.forEach(item => {
+      if (storage.hasOwnProperty(item.name)){
+        const oldQuant = storage[item.name].quantity
+        const oldPrice = storage[item.name].price
+        storage[item.name].quantity += item.quantity
+        storage[item.name].price = (oldQuant * oldPrice + item.quantity * item.price) / (oldQuant + item.quantity)
+      }else{
+        storage[item.name] = item
+      }
+    })
+
+  }
+
+  function showStock(){
+    return storage
+  }
+
+  function sellStock(orderArray){
+    let filteredOrder = orderArray
+    .filter(order => (storage.hasOwnProperty(order.name)))
+    .map(order => {
+      if (storage[order.name].quantity < order.quantity) {
+        return {name: order.name, quantity: storage[order.name].quantity}
+      } else {
+        return order;
+      }
+    });
+    console.log(filteredOrder);
+    filteredOrder.forEach(item => {
+      storage[item.name].quantity -= item.quantity
+      revenue += storage[item.name].price * item.quantity;
+      item.price = storage[item.name].price;
+    })
+    return filteredOrder;
+  }
+
+  function getRevenue(){
+    return revenue
+  }
+
+  return {addStock, showStock, sellStock, getRevenue}
+}
+
+module.exports = {shop, trainStation, increase, double, total, gibberish, mergeSort,calculator, dogHome};
